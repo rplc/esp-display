@@ -6,8 +6,10 @@ const char *password = "***";
 
 String _displayTime = "";
 String _displayTempIn = "";
+String _displayTempInHum = "";
 String _displayTempInLabel = "";
 String _displayTempOut = "";
+String _displayTempOutHum = "";
 String _displayTempOutLabel = "";
 
 WiFiClient espClient;
@@ -75,6 +77,15 @@ void callback(char *topic, byte *payload, unsigned int length)
         }
     }
 
+    if (strcmp(topic, "espDisplay/tempInHum") == 0)
+    {
+        _displayTempInHum = "";
+        for (int i = 0; i < length; i++)
+        {
+            _displayTempInHum += (char)payload[i];
+        }
+    }
+
     if (strcmp(topic, "espDisplay/tempInLabel") == 0)
     {
         _displayTempInLabel = "";
@@ -93,6 +104,15 @@ void callback(char *topic, byte *payload, unsigned int length)
         }
     }
 
+    if (strcmp(topic, "espDisplay/tempOutHum") == 0)
+    {
+        _displayTempOutHum = "";
+        for (int i = 0; i < length; i++)
+        {
+            _displayTempOutHum += (char)payload[i];
+        }
+    }
+
     if (strcmp(topic, "espDisplay/tempOutLabel") == 0)
     {
         _displayTempOutLabel = "";
@@ -107,7 +127,6 @@ void callback(char *topic, byte *payload, unsigned int length)
 
 void reconnect()
 {
-    // Loop until we're reconnected
     while (!client.connected())
     {
         Serial.print("Attempting MQTT connection...");
@@ -121,8 +140,10 @@ void reconnect()
 
             client.subscribe("espDisplay/time");
             client.subscribe("espDisplay/tempIn");
+            client.subscribe("espDisplay/tempInHum");
             client.subscribe("espDisplay/tempInLabel");
             client.subscribe("espDisplay/tempOut");
+            client.subscribe("espDisplay/tempOutHum");
             client.subscribe("espDisplay/tempOutLabel");
         }
         else
