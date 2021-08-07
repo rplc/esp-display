@@ -20,6 +20,12 @@ String _displayTempInLabel = "";
 String _displayTempOut = "";
 String _displayTempOutHum = "";
 String _displayTempOutLabel = "";
+int _displayState = 0;
+
+int button1Pin = 16;
+int _button1State = 0;
+int button2Pin = 15;
+int _button2State = 0;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -53,6 +59,9 @@ void setup()
     u8g2.begin();
     u8g2.setFlipMode(0);
     u8g2.setFontDirection(0);
+
+    pinMode(button1Pin, INPUT);
+    pinMode(button2Pin, INPUT);
 }
 
 void loop()
@@ -62,6 +71,27 @@ void loop()
         reconnect();
     }
     client.loop();
+
+    readButtons();
+}
+
+void readButtons()
+{
+    int tmpState = 0;
+
+    tmpState = digitalRead(button1Pin);
+    if (tmpState != _button1State) {
+        _button1State = tmpState;
+        client.publish("espDisplay/button1Press", _button1State == HIGH ? "1" : "0");
+        Serial.println("Button 1 press changed: " + String(_button1State == HIGH ? "pressed" : "released"));
+    }
+
+    tmpState = digitalRead(button2Pin);
+    if (tmpState != _button2State) {
+        _button2State = tmpState;
+        client.publish("espDisplay/button2Press", _button2State == HIGH ? "1" : "0");
+        Serial.println("Button 2 press changed: " + String(_button2State == HIGH ? "pressed" : "released"));
+    }
 }
 
 void callback(char *topic, byte *payload, unsigned int length)
@@ -109,6 +139,11 @@ void callback(char *topic, byte *payload, unsigned int length)
         _displayTempOutLabel = message;
     }
 
+    if (strcmp(topic, "espDisplay/displayState") == 0)
+    {
+        _displayState = message.equals("on") ? 1 : 0;
+    }
+
     updateDisplay();
 }
 
@@ -132,6 +167,7 @@ void reconnect()
             client.subscribe("espDisplay/tempOut");
             client.subscribe("espDisplay/tempOutHum");
             client.subscribe("espDisplay/tempOutLabel");
+            client.subscribe("espDisplay/displayState");
         }
         else
         {
@@ -146,6 +182,16 @@ void reconnect()
 
 void updateDisplay()
 {
+    if (_displayState == 0)
+    {
+        u8g2.setPowerSave(1);
+        return;
+    }
+    else
+    {
+        u8g2.setPowerSave(0);
+    }
+
     int x;
     int y;
 

@@ -14,7 +14,14 @@
   - CS - D5 (Arduino PIN 14)
   - RES - D7 (Arduino PIN 13)
 
-# ESP8266 to ePaper
+## u8x8 vs u8g2
+- u8x8: limited functionality but faster/less memory consumption, https://github.com/olikraus/u8g2/wiki/u8x8reference
+- u8g2: choice for this projekt due to ability to rotate the display, https://github.com/olikraus/u8g2/wiki/u8g2reference
+
+## Learnings
+- careful when choosing the font, choose an alphanumerical one!
+
+## ESP8266 to ePaper
 - https://www.az-delivery.de/en/blogs/azdelivery-blog-fur-arduino-und-raspberry-pi/e-paper-display-am-esp32-und-esp8266-teil1
 
 # ioBroker connection via MQTT
@@ -22,3 +29,12 @@
 
 # Arduino/ESP8266 development 
 - install drivers (if needed) https://github.com/nodemcu/nodemcu-devkit/tree/master/Drivers
+
+# Arduino Button
+- https://www.arduino.cc/en/Tutorial/BuiltInExamples/Button
+- 4 PIN Buttons: https://de.wikipedia.org/wiki/Widerstand_(Bauelement)#Farbkodierung_auf_Widerst%C3%A4nden
+- 2 PIN Buttons: https://www.the-diy-life.com/wp-content/uploads/2019/05/Single-Push-Button-On-Single-Arduino-Digital-Input.jpg
+
+# Libaries needed
+- U8g2  (https://github.com/olikraus/u8g2)
+- PubSubClient (https://pubsubclient.knolleary.net/)
