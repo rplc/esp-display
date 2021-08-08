@@ -34,6 +34,7 @@
 - https://www.arduino.cc/en/Tutorial/BuiltInExamples/Button
 - 4 PIN Buttons: https://de.wikipedia.org/wiki/Widerstand_(Bauelement)#Farbkodierung_auf_Widerst%C3%A4nden
 - 2 PIN Buttons: https://www.the-diy-life.com/wp-content/uploads/2019/05/Single-Push-Button-On-Single-Arduino-Digital-Input.jpg
+- use 3.3V on esp/nodemcu
 
 # Libaries needed
 - U8g2  (https://github.com/olikraus/u8g2)
