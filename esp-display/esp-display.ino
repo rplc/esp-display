@@ -33,8 +33,7 @@ long lastMsg = 0;
 char msg[50];
 int value = 0;
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 
     Serial.println();
@@ -43,8 +42,7 @@ void setup()
 
     WiFi.begin(ssid, password);
 
-    while (WiFi.status() != WL_CONNECTED)
-    {
+    while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
@@ -64,19 +62,18 @@ void setup()
     pinMode(button2Pin, INPUT);
 }
 
-void loop()
-{
-    if (!client.connected())
-    {
+void loop() {
+    if (!client.connected()) {
         reconnect();
     }
     client.loop();
 
     readButtons();
+
+    delay(100);
 }
 
-void readButtons()
-{
+void readButtons() {
     int tmpState = 0;
 
     tmpState = digitalRead(button1Pin);
@@ -94,70 +91,57 @@ void readButtons()
     }
 }
 
-void callback(char *topic, byte *payload, unsigned int length)
-{
+void callback(char *topic, byte *payload, unsigned int length) {
     String message = "";
-    for (int i = 0; i < length; i++)
-    {
+    for (int i = 0; i < length; i++) {
         message += (char)payload[i];
     }
 
     Serial.println("Message arrived [" + String(topic) + "]: [" + message + "]");
 
-    if (strcmp(topic, "espDisplay/time") == 0)
-    {
+    if (strcmp(topic, "espDisplay/time") == 0) {
         _displayTime = message;
     }
 
-    if (strcmp(topic, "espDisplay/tempIn") == 0)
-    {
+    if (strcmp(topic, "espDisplay/tempIn") == 0) {
         _displayTempIn = message;
     }
 
-    if (strcmp(topic, "espDisplay/tempInHum") == 0)
-    {
+    if (strcmp(topic, "espDisplay/tempInHum") == 0) {
         _displayTempInHum = message + "%";
     }
 
-    if (strcmp(topic, "espDisplay/tempInLabel") == 0)
-    {
+    if (strcmp(topic, "espDisplay/tempInLabel") == 0) {
         _displayTempInLabel = message;
     }
 
-    if (strcmp(topic, "espDisplay/tempOut") == 0)
-    {
+    if (strcmp(topic, "espDisplay/tempOut") == 0) {
         _displayTempOut = message;
     }
 
-    if (strcmp(topic, "espDisplay/tempOutHum") == 0)
-    {
+    if (strcmp(topic, "espDisplay/tempOutHum") == 0) {
         _displayTempOutHum = message + "%";
     }
 
-    if (strcmp(topic, "espDisplay/tempOutLabel") == 0)
-    {
+    if (strcmp(topic, "espDisplay/tempOutLabel") == 0) {
         _displayTempOutLabel = message;
     }
 
-    if (strcmp(topic, "espDisplay/displayState") == 0)
-    {
+    if (strcmp(topic, "espDisplay/displayState") == 0) {
         _displayState = message.equals("on") ? 1 : 0;
     }
 
     updateDisplay();
 }
 
-void reconnect()
-{
-    while (!client.connected())
-    {
+void reconnect() {
+    while (!client.connected()) {
         Serial.print("Attempting MQTT connection...");
         // Create a random client ID
         String clientId = "ESP8266Client-";
         clientId += String(random(0xffff), HEX);
         // Attempt to connect
-        if (client.connect(clientId.c_str()))
-        {
+        if (client.connect(clientId.c_str())) {
             Serial.println("connected");
 
             client.subscribe("espDisplay/time");
@@ -168,9 +152,7 @@ void reconnect()
             client.subscribe("espDisplay/tempOutHum");
             client.subscribe("espDisplay/tempOutLabel");
             client.subscribe("espDisplay/displayState");
-        }
-        else
-        {
+        } else {
             Serial.print("failed, rc=");
             Serial.print(client.state());
             Serial.println(" try again in 5 seconds");
@@ -180,15 +162,11 @@ void reconnect()
     }
 }
 
-void updateDisplay()
-{
-    if (_displayState == 0)
-    {
+void updateDisplay() {
+    if (_displayState == 0) {
         u8g2.setPowerSave(1);
         return;
-    }
-    else
-    {
+    } else {
         u8g2.setPowerSave(0);
     }
 
@@ -196,8 +174,7 @@ void updateDisplay()
     int y;
 
     u8g2.firstPage();
-    do
-    {
+    do {
         x = 8;
         u8g2.setFont(u8g2_font_t0_11_tf);
 
@@ -231,23 +208,18 @@ void updateDisplay()
     } while (u8g2.nextPage());
 }
 
-void drawBinaryNumber(int xStart, int y, int number)
-{
+void drawBinaryNumber(int xStart, int y, int number) {
     drawBox(xStart, y, number & 1);
     drawBox(xStart - 8, y, number & 2);
     drawBox(xStart - 16, y, number & 4);
     drawBox(xStart - 24, y, number & 8);
 }
 
-void drawBox(int x, int y, bool filled)
-{
+void drawBox(int x, int y, bool filled) {
     // CAUTION: the display rotation (line 11 ~> U8G2_R3) seems not to be regarded when drawing boxes/frames...
-    if (filled)
-    {
+    if (filled) {
         u8g2.drawBox(y, x, 6, 6);
-    }
-    else
-    {
+    } else {
         u8g2.drawFrame(y, x, 6, 6);
     }
 }
