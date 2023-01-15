@@ -70,7 +70,7 @@ void loop() {
 
     readButtons();
 
-    delay(100);
+    delay(300);
 }
 
 void readButtons() {
