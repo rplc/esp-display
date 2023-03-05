@@ -36,6 +36,8 @@ int value = 0;
 void setup() {
     Serial.begin(115200);
 
+    Serial.println(WiFi.macAddress());
+
     Serial.println();
     Serial.print("Connecting to ");
     Serial.println(ssid);
@@ -70,7 +72,7 @@ void loop() {
 
     readButtons();
 
-    delay(300);
+    delay(500);
 }
 
 void readButtons() {
@@ -103,28 +105,32 @@ void callback(char *topic, byte *payload, unsigned int length) {
         _displayTime = message;
     }
 
-    if (strcmp(topic, "espDisplay/tempIn") == 0) {
-        _displayTempIn = message;
-    }
+    if (strcmp(topic, "espDisplay/in") == 0) {
+        int prevDelim = 0;
+        int delim = message.indexOf('|');
+        _displayTempInLabel = message.substring(prevDelim, delim);
 
-    if (strcmp(topic, "espDisplay/tempInHum") == 0) {
-        _displayTempInHum = message + "%";
+        prevDelim = delim + 1;
+        delim = message.indexOf('|', prevDelim);
+        _displayTempIn = message.substring(prevDelim, delim);
+        
+        prevDelim = delim + 1;
+        delim = message.indexOf('|', prevDelim);
+        _displayTempInHum = message.substring(prevDelim, delim);
     }
+    
+    if (strcmp(topic, "espDisplay/out") == 0) {
+        int prevDelim = 0;
+        int delim = message.indexOf('|');
+        _displayTempOutLabel = message.substring(prevDelim, delim);
 
-    if (strcmp(topic, "espDisplay/tempInLabel") == 0) {
-        _displayTempInLabel = message;
-    }
-
-    if (strcmp(topic, "espDisplay/tempOut") == 0) {
-        _displayTempOut = message;
-    }
-
-    if (strcmp(topic, "espDisplay/tempOutHum") == 0) {
-        _displayTempOutHum = message + "%";
-    }
-
-    if (strcmp(topic, "espDisplay/tempOutLabel") == 0) {
-        _displayTempOutLabel = message;
+        prevDelim = delim + 1;
+        delim = message.indexOf('|', prevDelim);
+        _displayTempOut = message.substring(prevDelim, delim);
+        
+        prevDelim = delim + 1;
+        delim = message.indexOf('|', prevDelim);
+        _displayTempOutHum = message.substring(prevDelim, delim);
     }
 
     if (strcmp(topic, "espDisplay/displayState") == 0) {
@@ -145,12 +151,8 @@ void reconnect() {
             Serial.println("connected");
 
             client.subscribe("espDisplay/time");
-            client.subscribe("espDisplay/tempIn");
-            client.subscribe("espDisplay/tempInHum");
-            client.subscribe("espDisplay/tempInLabel");
-            client.subscribe("espDisplay/tempOut");
-            client.subscribe("espDisplay/tempOutHum");
-            client.subscribe("espDisplay/tempOutLabel");
+            client.subscribe("espDisplay/in");
+            client.subscribe("espDisplay/out");
             client.subscribe("espDisplay/displayState");
         } else {
             Serial.print("failed, rc=");
